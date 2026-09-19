@@ -1,59 +1,141 @@
-package com.gdb.tests;
+package com.gdb.domain;
 
-import com.gdb.domain.Account;
+public class Account {
 
-public class TestAccount {
+    private String accountNumber;
+    private String name;
+    private int age;
+    private double balance;
+    private String accountType;
+    private String status;
+    private String pin;
 
-    public static void main(String[] args) {
+    public Account(String accountNumber, String name, int age, double balance, String accountType, String status, String pin) {
 
-        System.out.println("=== Starting Account Test Suite ===");
-
-        Account acc = new Account("ACC1001", "Rajesh Sharma", 28, 5000.0, "SAVINGS", "ACTIVE");
-
-        if (acc.getAccountNumber().equals("ACC1001") &&
-                acc.getName().equals("Rajesh Sharma") &&
-                acc.getAge() == 28 &&
-                acc.getBalance() == 5000.0 &&
-                acc.getAccountType().equals("SAVINGS") &&
-                acc.getStatus().equals("ACTIVE")) {
-            System.out.println("Test 1: Initial Account Creation -> PASS");
-        } else {
-            System.out.println("Test 1: Initial Account Creation -> FAIL");
+        if (accountNumber == null || accountNumber.isEmpty()) {
+            throw new IllegalArgumentException("Account number cannot be empty");
         }
 
-        boolean depositResult = acc.deposit(1500.0);
-
-        if (depositResult && acc.getBalance() == 6500.0) {
-            System.out.println("Test 2: Valid Deposit (+1500.0) -> PASS [New Balance: " + acc.getBalance() + "]");
-        } else {
-            System.out.println("Test 2: Valid Deposit (+1500.0) -> FAIL");
+        if (age < 18) {
+            throw new IllegalArgumentException("Age must be at least 18");
         }
 
-        boolean invalidDeposit = acc.deposit(-500.0);
-
-        if (!invalidDeposit && acc.getBalance() == 6500.0) {
-            System.out.println("Test 3: Invalid Deposit (-500.0) -> PASS [Rejected, Balance: " + acc.getBalance() + "]");
-        } else {
-            System.out.println("Test 3: Invalid Deposit (-500.0) -> FAIL");
+        if (balance < 0) {
+            throw new IllegalArgumentException("Balance cannot be negative");
         }
 
-        boolean withdrawResult = acc.withdraw(2000.0);
-
-        if (withdrawResult && acc.getBalance() == 4500.0) {
-            System.out.println("Test 4: Valid Withdrawal (-2000.0) -> PASS [New Balance: " + acc.getBalance() + "]");
-        } else {
-            System.out.println("Test 4: Valid Withdrawal (-2000.0) -> FAIL");
+        if (pin == null || pin.length() != 4) {
+            throw new IllegalArgumentException("PIN must be 4 digits");
         }
 
-        double initialBalance = acc.getBalance();
-        boolean overdraftResult = acc.withdraw(10000.0);
+        this.accountNumber = accountNumber;
+        this.name = name;
+        this.age = age;
+        this.balance = balance;
+        this.accountType = accountType;
+        this.status = status;
+        this.pin = pin;
+    }
 
-        if (!overdraftResult && acc.getBalance() == initialBalance) {
-            System.out.println("Test 5: Overdraft Withdrawal (-10000.0) -> PASS [Rejected, Balance: " + acc.getBalance() + "]");
-        } else {
-            System.out.println("Test 5: Overdraft Withdrawal (-10000.0) -> FAIL");
+    public boolean validatePin(String enteredPin) {
+
+        if (enteredPin != null && enteredPin.equals(this.pin)) {
+            return true;
         }
 
-        System.out.println("=== All Tests Completed Successfully ===");
+        return false;
+    }
+
+    public boolean deposit(double amount) {
+
+        if (!"Active".equalsIgnoreCase(this.status)) {
+            return false;
+        }
+
+        if (amount > 0) {
+            balance += amount;
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean withdraw(double amount) {
+
+        if (!"Active".equalsIgnoreCase(this.status)) {
+            return false;
+        }
+
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void displayAccountInfo() {
+        System.out.println("Account Number: " + accountNumber);
+        System.out.println("Name: " + name);
+        System.out.println("Age: " + age);
+        System.out.println("Balance: Rs " + balance);
+        System.out.println("Account Type: " + accountType);
+        System.out.println("Status: " + status);
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }
