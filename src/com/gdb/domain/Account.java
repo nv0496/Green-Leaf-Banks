@@ -12,20 +12,16 @@ public class Account {
 
     public Account(String accountNumber, String name, int age, double balance, String accountType, String status, String pin) {
 
-        if (accountNumber == null || accountNumber.isEmpty()) {
-            throw new IllegalArgumentException("Account number cannot be empty");
-        }
-
         if (age < 18) {
             throw new IllegalArgumentException("Age must be at least 18");
         }
 
         if (balance < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
+            throw new IllegalArgumentException("Initial balance cannot be negative");
         }
 
-        if (pin == null || pin.length() != 4) {
-            throw new IllegalArgumentException("PIN must be 4 digits");
+        if (pin == null || !pin.matches("\\d{4}")) {
+            throw new IllegalArgumentException("PIN must be exactly 4 digits");
         }
 
         this.accountNumber = accountNumber;
@@ -37,18 +33,9 @@ public class Account {
         this.pin = pin;
     }
 
-    public boolean validatePin(String enteredPin) {
-
-        if (enteredPin != null && enteredPin.equals(this.pin)) {
-            return true;
-        }
-
-        return false;
-    }
-
     public boolean deposit(double amount) {
 
-        if (!"Active".equalsIgnoreCase(this.status)) {
+        if (!"ACTIVE".equalsIgnoreCase(status)) {
             return false;
         }
 
@@ -60,9 +47,36 @@ public class Account {
         return false;
     }
 
-    public boolean withdraw(double amount) {
+    public boolean validatePin(String enteredPin) {
 
-        if (!"Active".equalsIgnoreCase(this.status)) {
+        if (enteredPin == null || enteredPin.isEmpty()) {
+            return false;
+        }
+
+        return enteredPin.equals(pin);
+    }
+
+    public boolean changePin(String oldPin, String newPin) {
+
+        if (!validatePin(oldPin)) {
+            return false;
+        }
+
+        if (newPin == null || !newPin.matches("\\d{4}")) {
+            return false;
+        }
+
+        pin = newPin;
+        return true;
+    }
+
+    public boolean withdraw(double amount, String enteredPin) {
+
+        if (!validatePin(enteredPin)) {
+            return false;
+        }
+
+        if (!"ACTIVE".equalsIgnoreCase(status)) {
             return false;
         }
 
@@ -72,6 +86,18 @@ public class Account {
         }
 
         return false;
+    }
+
+    public void suspend() {
+        status = "SUSPENDED";
+    }
+
+    public void activate() {
+        status = "ACTIVE";
+    }
+
+    public void close() {
+        status = "CLOSED";
     }
 
     public void displayAccountInfo() {
